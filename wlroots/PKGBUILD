@@ -1,0 +1,43 @@
+# Maintainer: cevdetta
+# Contributor: cevdetta
+
+_pkgname=wlroots
+_pkgabi=0.19
+pkgname=${_pkgname}-waypure
+pkgver=0.19.2
+pkgrel=1
+pkgdesc="Modular Wayland compositor library without X"
+arch=('x86_64')
+url="https://gitlab.freedesktop.org/wlroots/wlroots"
+license=('MIT')
+depends=(glibc 'lcms2' 'libdisplay-info' 'libdrm' 'libinput' 'libliftoff' 'libxkbcommon' 'mesa' 'pixman' 'seatd' 'systemd-libs' 'vulkan-icd-loader' 'wayland')
+makedepends=('glslang' 'meson' 'systemd' 'vulkan-headers' 'wayland-protocols')
+provides=("${_pkgname}${_pkgabi}" "libwlroots-${_pkgabi}.so")
+conflicts=("${_pkgname}${_pkgabi}")
+replaces=("${_pkgname}${_pkgabi}")
+source=("${url}/-/releases/${pkgver}/downloads/${_pkgname}-${pkgver}.tar.gz")
+sha256sums=('09a0a8d60104c8b0772fee4f60ba76a89aed7e59dff7659d00960fba06bdf267')
+
+build() {
+  local _meson_options=(
+    -Dxcb-errors=disabled
+    -Dxwayland=disabled
+    -Dexamples=false
+    # -Dicon_directory=''
+    -Drenderers=vulkan
+    -Dbackends=drm,libinput
+    -Dallocators=gbm,udmabuf
+    -Dsession=enabled
+    -Dcolor-management=enabled
+    -Dlibliftoff=enabled
+  )
+
+  arch-meson "${_pkgname}-${pkgver}" build "${_meson_options[@]}"
+
+  meson compile -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" meson install -C build
+  install -Dm644 "${_pkgname}-${pkgver}/LICENSE" -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
