@@ -12,7 +12,6 @@ pkgbase = cairo-waypure
 	depends = glib2
 	depends = glibc
 	depends = libpng
-	depends = lzo
 	depends = pixman
 	depends = zlib
 	provides = cairo
