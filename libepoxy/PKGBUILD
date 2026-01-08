@@ -1,0 +1,51 @@
+# Maintainer: cevdetta
+# Contributor: cevdetta
+
+_pkgname=libepoxy
+pkgname=${_pkgname}-waypure
+pkgver=1.5.10
+pkgrel=1
+pkgdesc="Library handling OpenGL function pointer management"
+arch=('x86_64')
+url="https://github.com/anholt/libepoxy"
+license=('MIT')
+depends=('glibc' 'libglvnd-waypure')
+makedepends=('mesa-libgl' 'meson' 'systemd')
+provides=("${_pkgname}" 'libepoxy.so')
+conflicts=("${_pkgname}")
+replaces=("${_pkgname}")
+source=(
+  "$url/archive/refs/tags/$pkgver.tar.gz"
+  'libepoxy-1.5.10-libopengl-fallback.patch'
+)
+sha256sums=(
+  'a7ced37f4102b745ac86d6a70a9da399cc139ff168ba6b8002b4d8d43c900c15'
+  'a9e639f36676eba5b6896fd8022cbc3def18f2ef5bd380216530f5e8c1a5228c'
+)
+
+prepare() {
+    patch -d "${pkgname%%-*}-$pkgver" -Np1 -i ../libepoxy-1.5.10-libopengl-fallback.patch
+}
+
+build() {
+  local _meson_options=(
+    -Ddocs=false
+    -Dglx=no
+    -Degl=yes
+    -Dx11=false
+    -Dtests=false
+  )
+
+  arch-meson "${_pkgname}-${pkgver}" build "${_meson_options[@]}"
+
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  DESTDIR="${pkgdir}" meson install -C build
+   install -Dm644 "${pkgname%%-*}-$pkgver/COPYING" -t "$pkgdir/usr/share/licenses/$pkgname"
+}
