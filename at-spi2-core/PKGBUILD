@@ -1,0 +1,38 @@
+# Maintainer: cevdetta
+# Contributor: cevdetta
+
+_pkgname=at-spi2-core
+pkgname=${_pkgname}-waypure
+pkgver=2.59.0
+pkgrel=1
+pkgdesc="Protocol definitions and daemon for D-Bus at-spi"
+arch=('x86_64')
+url="https://gitlab.gnome.org/GNOME/at-spi2-core"
+license=('LGPL-2.1-or-later')
+depends=('dbus' 'gcc-libs' 'glib2' 'glibc' 'systemd-libs')
+makedepends=('glib2-devel' 'meson' 'systemd')
+provides=("${_pkgname}" 'libatk-1.0.so' 'libatk-bridge-2.0.so' 'libatspi.so')
+conflicts=("${_pkgname}")
+replaces=("${_pkgname}")
+source=("$url/-/archive/$pkgver/at-spi2-core-$pkgver.tar.gz")
+sha256sums=('fccb936f10df5c0e445df2cbac4ca348cc25c4652e197af84a3050cdfb7837c5')
+
+build() {
+  local _meson_options=(
+    -Ddefault_bus=dbus-broker
+    -Duse_systemd=true
+    -Dgtk2_atk_adaptor=false
+    -Ddocs=false
+    -Dintrospection=disabled
+    -Dx11=disabled
+    -Datk_only=false
+  )
+
+  arch-meson "${_pkgname}-${pkgver}" build "${_meson_options[@]}"
+
+  meson compile -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" meson install -C build
+}
