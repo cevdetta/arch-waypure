@@ -14,7 +14,7 @@ makedepends=('meson' 'python')
 optdepends=(
   'mesa: free OpenGL implementation (EGL, GLES, GL)'
 )
-provides=("${_pkgname}" 'libegl' 'libgles' 'libopengl')
+provides=("${_pkgname}" 'libegl' 'libgl' 'libgles' 'libopengl')
 provides+=(libEGL.so libGLESv2.so libGLdispatch.so libOpenGL.so)
 conflicts=("${_pkgname}")
 replaces=("${_pkgname}")

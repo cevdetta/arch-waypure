@@ -11,6 +11,7 @@ pkgbase = libglvnd-waypure
 	optdepends = mesa: free OpenGL implementation (EGL, GLES, GL)
 	provides = libglvnd
 	provides = libegl
+	provides = libgl
 	provides = libgles
 	provides = libopengl
 	provides = libEGL.so
