@@ -14,6 +14,8 @@ pkgbase = at-spi2-core-waypure
 	depends = glibc
 	depends = systemd-libs
 	provides = at-spi2-core
+	provides = at-spi2-atk=2.59.0-1
+	provides = atk=2.59.0-1
 	provides = libatk-1.0.so
 	provides = libatk-bridge-2.0.so
 	provides = libatspi.so
