@@ -1,0 +1,50 @@
+# Maintainer: cevdetta
+# Contributor: cevdetta
+
+_pkgname=freeglut
+pkgname=${_pkgname}-waypure
+pkgver=3.8.0.17.g61d2fa47
+pkgrel=1
+pkgdesc="Free OpenGL Utility Toolkit"
+arch=('x86_64')
+url="https://github.com/freeglut/freeglut"
+license=('X11')
+depends=('glibc' 'libglvnd' 'libxkbcommon' 'wayland')
+makedepends=('cmake' 'glu' 'git' 'mesa' 'ninja')
+provides=("${_pkgname}" 'glut')
+conflicts=("${_pkgname}")
+replaces=("${_pkgname}")
+source=("git+${url}.git#commit=61d2fa47ab68283542e64ba644f227a72f6a8ec2")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "$srcdir/freeglut"
+  git describe --tags --long --dirty | sed 's/^v//;s/-/./g'
+}
+
+build() {
+  local _cmake_args=(
+    -B build -G Ninja
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+
+    -D FREEGLUT_BUILD_DEMOS=OFF
+    -D FREEGLUT_BUILD_SHARED_LIBS=ON
+    -D FREEGLUT_BUILD_STATIC_LIBS=OFF
+    -D FREEGLUT_GLES=OFF
+    -D FREEGLUT_WAYLAND=ON
+    -D FREEGLUT_INSTALL_MAN_PAGES=OFF
+    -D FREEGLUT_REPLACE_GLUT=ON
+  )
+
+  cmake -S "${_pkgname}" "${_cmake_args[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="${pkgdir}" cmake --install build
+
+  ln -s glut.pc "${pkgdir}/usr/lib/pkgconfig/freeglut.pc"
+
+  install -Dm644 "${_pkgname}/COPYING" -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}

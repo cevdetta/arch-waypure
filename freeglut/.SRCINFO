@@ -1,0 +1,24 @@
+pkgbase = freeglut-waypure
+	pkgdesc = Free OpenGL Utility Toolkit
+	pkgver = 3.8.0.17.g61d2fa47
+	pkgrel = 1
+	url = https://github.com/freeglut/freeglut
+	arch = x86_64
+	license = X11
+	makedepends = cmake
+	makedepends = glu
+	makedepends = git
+	makedepends = mesa
+	makedepends = ninja
+	depends = glibc
+	depends = libglvnd
+	depends = libxkbcommon
+	depends = wayland
+	provides = freeglut
+	provides = glut
+	conflicts = freeglut
+	replaces = freeglut
+	source = git+https://github.com/freeglut/freeglut.git#commit=61d2fa47ab68283542e64ba644f227a72f6a8ec2
+	sha256sums = SKIP
+
+pkgname = freeglut-waypure
