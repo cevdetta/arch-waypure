@@ -1,0 +1,52 @@
+# Maintainer: cevdetta
+# Contributor: cevdetta
+
+_pkgname=zvbi
+pkgname=${_pkgname}-waypure
+pkgver=0.2.44
+pkgrel=1
+pkgdesc="VBI capture and decoding library"
+arch=('x86_64')
+url="https://github.com/zapping-vbi/zvbi"
+license=(
+  'BSD'
+  'GPL2'
+  'LGPL2.1'
+  'MIT'
+)
+depends=('glibc' 'libgcc' 'libpng')
+makedepends=('make')
+provides=("${_pkgname}")
+conflicts=("${_pkgname}")
+replaces=("${_pkgname}")
+source=("${url}/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('bca620ab670328ad732d161e4ce8d9d9fc832533cb7440e98c50e112b805ac5e')
+
+prepare() {
+  cd "zvbi-${pkgver}"
+  NOCONFIGURE=1 ./autogen.sh
+}
+
+build() {
+  cd "zvbi-${pkgver}"
+
+  local _make_options=(
+    --prefix=/usr
+    --sbindir=/usr/bin
+    --without-x
+    --disable-examples
+    --disable-tests
+    --disable-doxygen
+  )
+
+  ./configure "${_make_options[@]}"
+
+  make
+}
+
+package() {
+  cd "zvbi-${pkgver}"
+
+  make DESTDIR="${pkgdir}" install
+  install -Dm 644 COPYING.md -t "${pkgdir}"/usr/share/licenses/zvbi
+}
