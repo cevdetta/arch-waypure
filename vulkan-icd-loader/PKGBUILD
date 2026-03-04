@@ -1,0 +1,48 @@
+# Maintainer: cevdetta
+# Contributor: cevdetta
+
+_pkgname=vulkan-icd-loader
+pkgname=${_pkgname}-waypure
+pkgver=1.4.341.0
+pkgrel=1
+pkgdesc="Vulkan Installable Client Driver (ICD) Loader"
+arch=('x86_64')
+url="https://github.com/KhronosGroup/Vulkan-Loader"
+license=('Apache-2.0')
+groups=('vulkan-devel')
+depends=('glibc')
+makedepends=('cmake' 'ninja' 'vulkan-headers' 'wayland')
+optdepends=(
+  'vulkan-driver: packaged vulkan driver'
+)
+provides=("${_pkgname}" 'libvulkan.so')
+conflicts=("${_pkgname}")
+replaces=("${_pkgname}")
+source=("${url}/archive/refs/tags/vulkan-sdk-${pkgver}.tar.gz")
+sha256sums=('fe982697c780a950641bfcf94707135c26c501352242d285fa95d087d691292e')
+
+build() {
+  local _cmake_options=(
+    -B build -G Ninja
+    -D CMAKE_BUILD_TYPE=Release
+
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_INSTALL_SYSCONFDIR=/etc
+    -D CMAKE_SKIP_INSTALL_RPATH=ON
+    -D CMAKE_SKIP_RPATH=ON
+
+    -D BUILD_WERROR=ON
+    -D BUILD_TESTS=OFF
+    -D BUILD_WSI_XCB_SUPPORT=OFF
+    -D BUILD_WSI_XLIB_SUPPORT=OFF
+    -D BUILD_WSI_WAYLAND_SUPPORT=ON
+    -D BUILD_WSI_DIRECTFB_SUPPORT=OFF
+  )
+
+  cmake -S "Vulkan-Loader-vulkan-sdk-${pkgver}" "${_cmake_options[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="${pkgdir}" cmake --install build
+}
