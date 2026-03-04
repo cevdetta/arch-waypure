@@ -1,0 +1,56 @@
+# Maintainer: cevdetta
+# Contributor: cevdetta
+
+_pkgname=vulkan-tools
+pkgname=${_pkgname}-waypure
+pkgver=1.4.341.0
+pkgrel=1
+pkgdesc="Vulkan tools and utilities"
+arch=('x86_64')
+url="https://github.com/KhronosGroup/Vulkan-Tools"
+license=('Apache-2.0')
+groups=('vulkan-devel')
+depends=('glibc' 'libgcc' 'libstdc++' 'wayland' 'vulkan-icd-loader')
+makedepends=(
+  'cmake'
+  'ninja'
+  'glslang'
+  'python'
+  'spirv-tools'
+  'vulkan-headers'
+  'wayland-protocols'
+)
+provides=("${_pkgname}")
+conflicts=("${_pkgname}")
+replaces=("${_pkgname}")
+source=("${url}/archive/refs/tags/vulkan-sdk-${pkgver}.tar.gz")
+sha256sums=('dc65f1ea97dd0b2155c2281a79e87d27183c0737fb96377744091a3c8460ae1e')
+
+build() {
+  local _cmake_options=(
+    -B build -G Ninja
+    -D CMAKE_BUILD_TYPE=Release
+
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_INSTALL_SYSCONFDIR=/etc
+    -D CMAKE_DISABLE_FIND_PACKAGE_Git=ON
+    -D CMAKE_SKIP_INSTALL_RPATH=ON
+
+    -D BUILD_WERROR=ON
+    -D BUILD_TESTS=OFF
+    -D BUILD_CUBE=ON
+    -D BUILD_ICD=OFF
+    -D BUILD_VULKANINFO=ON
+    -D BUILD_WSI_XCB_SUPPORT=OFF
+    -D BUILD_WSI_XLIB_SUPPORT=OFF
+    -D BUILD_WSI_WAYLAND_SUPPORT=ON
+    -D BUILD_WSI_DIRECTFB_SUPPORT=OFF
+  )
+
+  cmake -S "Vulkan-Tools-vulkan-sdk-${pkgver}" "${_cmake_options[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="${pkgdir}" cmake --install build
+}

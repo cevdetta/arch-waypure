@@ -1,0 +1,27 @@
+pkgbase = vulkan-tools-waypure
+	pkgdesc = Vulkan tools and utilities
+	pkgver = 1.4.341.0
+	pkgrel = 1
+	url = https://github.com/KhronosGroup/Vulkan-Tools
+	arch = x86_64
+	groups = vulkan-devel
+	license = Apache-2.0
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = glslang
+	makedepends = python
+	makedepends = spirv-tools
+	makedepends = vulkan-headers
+	makedepends = wayland-protocols
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = wayland
+	depends = vulkan-icd-loader
+	provides = vulkan-tools
+	conflicts = vulkan-tools
+	replaces = vulkan-tools
+	source = https://github.com/KhronosGroup/Vulkan-Tools/archive/refs/tags/vulkan-sdk-1.4.341.0.tar.gz
+	sha256sums = dc65f1ea97dd0b2155c2281a79e87d27183c0737fb96377744091a3c8460ae1e
+
+pkgname = vulkan-tools-waypure
