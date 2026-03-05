@@ -1,0 +1,167 @@
+# Maintainer: cevdetta
+# Contributor: cevdetta
+
+_pkgname=imagemagick
+pkgname=${_pkgname}-waypure
+pkgver=7.1.2.15
+_pkgver=${pkgver%.*}-${pkgver##*.}
+pkgrel=1
+pkgdesc="An image viewing/manipulation program"
+arch=('x86_64')
+url="https://github.com/ImageMagick/ImageMagick"
+license=('ImageMagick')
+depends=(
+  bash
+  bzip2
+  cairo
+  djvulibre
+  fftw
+  fontconfig
+  freetype2
+  glib2
+  glibc
+  jbigkit
+  lcms2
+  libgcc
+  libgomp
+  libheif
+  libjpeg-turbo
+  libjxl
+  liblqr
+  libpng
+  libraqm
+  libraw
+  librsvg
+  libstdc++
+  libtiff
+  libtool
+  libultrahdr
+  libwebp
+  libwmf
+  libxml2
+  libzip
+  openexr
+  openjpeg2
+  pango
+  perl
+  xz
+  zlib-ng-compat
+)
+makedepends=(
+  chrpath
+  ghostscript
+  glu
+  ocl-icd
+  opencl-headers
+)
+checkdepends=(gsfonts ttf-dejavu)
+optdepends=(
+  'ghostscript: PS/PDF support'
+  'ocl-icd: OpenCL support'
+)
+provides=("${_pkgname}" 'libmagick')
+conflicts=("${_pkgname}")
+replaces=("${_pkgname}")
+backup=(etc/ImageMagick-7/{colors,delegates,log,mime,policy,quantization-table,thresholds,type,type-{dejavu,ghostscript}}.xml)
+source=("${url}/archive/refs/tags/${_pkgver}.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+  cd "ImageMagick-${_pkgver}"
+
+  local _make_options=(
+    --prefix=/usr
+    --sysconfdir=/etc
+    PSDelegate=/usr/bin/gs
+    XPSDelegate=/usr/bin/gxps
+    PCLDelegate=/usr/bin/gpcl6
+
+    # --with-apple-font-dir=default
+    --with-dejavu-font-dir=/usr/share/fonts/TTF
+    --with-gs-font-dir=/usr/share/fonts/gsfonts
+    # --with-urw-base35-font-dir=default
+    # --with-urw-base35-type1-font-dir=default
+    # --with-windows-font-dir=/usr/share/fonts/corefonts
+
+    --enable-shared
+    --disable-static
+    # --with-utilities
+    --with-threads
+    --with-modules
+    # --with-gnu-ld
+    --enable-opencl
+    --enable-openmp
+    --with-security-policy=open
+    --with-quantum-depth=16
+    # --enable-64bit-channel-masks
+    --enable-hdri
+
+    --without-jemalloc
+    --without-mtmalloc
+    --without-tcmalloc
+    --without-umem
+
+    --with-bzlib
+    --without-autotrace
+    --with-djvu
+    --without-dps
+    --with-fftw
+    --with-flif
+    --without-fpx
+    --with-fontconfig
+    --with-freetype
+    --without-gslib
+    --without-gvc
+    --without-gcc-arch
+    --with-heic
+    --with-jbig
+    --with-jpeg
+    --with-jxl
+    --with-dmr
+    --with-lcms
+    --with-lqr
+    --with-ltdl
+    --with-lzma
+    --with-magick-plus-plus
+    --with-openexr
+    --with-openjp2
+    --with-pango
+    --with-perl
+    --with-perl-options='INSTALLDIRS=vendor INSTALL_BASE=' # ARCH
+    --with-png
+    --with-raqm
+    --with-raw
+    --with-rsvg
+    --with-tiff
+    --with-uhdr
+    --with-webp
+    --with-wmf
+    --without-x
+    --with-xml
+    --with-zip
+    --with-zlib
+    --with-zstd
+  )
+
+  ./configure "${_make_options[@]}"
+
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+check() (
+  cd "ImageMagick-${_pkgver}"
+  ulimit -n 4096
+  make check
+)
+
+package() {
+  cd "ImageMagick-${_pkgver}"
+  make DESTDIR="${pkgdir}" install
+
+  find "${pkgdir}/usr/lib/perl5" -name '*.so' -exec chrpath -d {} +
+  rm "${pkgdir}"/etc/ImageMagick-*/type-{apple,urw-base35,windows}.xml
+  rm "$pkgdir"/usr/lib/*.la
+
+  install -Dm644 LICENSE NOTICE -t "${pkgdir}"/usr/share/licenses/"${pkgname}"
+}
