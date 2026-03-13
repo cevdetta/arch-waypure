@@ -3,7 +3,7 @@
 
 _pkgname=imagemagick
 pkgname=${_pkgname}-waypure
-pkgver=7.1.2.15
+pkgver=7.1.2.16
 _pkgver=${pkgver%.*}-${pkgver##*.}
 pkgrel=1
 pkgdesc="An image viewing/manipulation program"
@@ -64,7 +64,7 @@ conflicts=("${_pkgname}")
 replaces=("${_pkgname}")
 backup=(etc/ImageMagick-7/{colors,delegates,log,mime,policy,quantization-table,thresholds,type,type-{dejavu,ghostscript}}.xml)
 source=("${url}/archive/refs/tags/${_pkgver}.tar.gz")
-sha256sums=('SKIP')
+sha256sums=('aadfa67a104d14a35339de0f2cc286c973a0f43329770c69e9667a22208750fb')
 
 build() {
   cd "ImageMagick-${_pkgver}"
@@ -160,6 +160,13 @@ package() {
   make DESTDIR="${pkgdir}" install
 
   find "${pkgdir}/usr/lib/perl5" -name '*.so' -exec chrpath -d {} +
+
+  # Strip Perl XS shared objects
+  find "${pkgdir}/usr/lib/perl5" -name '*.so' -exec strip -R .comment -R .note {} +
+
+  # Remove empty directory
+  rm -r "${pkgdir}/usr/lib/perl5/5.42/core_perl"
+
   rm "${pkgdir}"/etc/ImageMagick-*/type-{apple,urw-base35,windows}.xml
   rm "$pkgdir"/usr/lib/*.la
 
