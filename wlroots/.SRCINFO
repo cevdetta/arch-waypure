@@ -1,6 +1,6 @@
 pkgbase = wlroots-waypure
 	pkgdesc = Modular Wayland compositor library without X
-	pkgver = 0.19.2
+	pkgver = 0.20.1
 	pkgrel = 1
 	url = https://gitlab.freedesktop.org/wlroots/wlroots
 	arch = x86_64
@@ -23,11 +23,11 @@ pkgbase = wlroots-waypure
 	depends = systemd-libs
 	depends = vulkan-icd-loader
 	depends = wayland
-	provides = wlroots0.19
-	provides = libwlroots-0.19.so
-	conflicts = wlroots0.19
-	replaces = wlroots0.19
-	source = https://gitlab.freedesktop.org/wlroots/wlroots/-/releases/0.19.2/downloads/wlroots-0.19.2.tar.gz
-	sha256sums = 09a0a8d60104c8b0772fee4f60ba76a89aed7e59dff7659d00960fba06bdf267
+	provides = wlroots0.20
+	provides = libwlroots-0.20.so
+	conflicts = wlroots0.20
+	replaces = wlroots0.20
+	source = https://gitlab.freedesktop.org/wlroots/wlroots/-/releases/0.20.1/downloads/wlroots-0.20.1.tar.gz
+	sha256sums = a8541187baecaa2620938afacde88266cb7efa5928cb09d579d8efb07bc4901b
 
 pkgname = wlroots-waypure

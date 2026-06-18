@@ -2,9 +2,9 @@
 # Contributor: cevdetta
 
 _pkgname=wlroots
-_pkgabi=0.19
+_pkgabi=0.20
 pkgname=${_pkgname}-waypure
-pkgver=0.19.2
+pkgver=0.20.1
 pkgrel=1
 pkgdesc="Modular Wayland compositor library without X"
 arch=('x86_64')
@@ -16,7 +16,7 @@ provides=("${_pkgname}${_pkgabi}" "libwlroots-${_pkgabi}.so")
 conflicts=("${_pkgname}${_pkgabi}")
 replaces=("${_pkgname}${_pkgabi}")
 source=("${url}/-/releases/${pkgver}/downloads/${_pkgname}-${pkgver}.tar.gz")
-sha256sums=('09a0a8d60104c8b0772fee4f60ba76a89aed7e59dff7659d00960fba06bdf267')
+sha256sums=('a8541187baecaa2620938afacde88266cb7efa5928cb09d579d8efb07bc4901b')
 
 build() {
   local _meson_options=(
