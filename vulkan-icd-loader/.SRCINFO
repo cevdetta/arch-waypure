@@ -1,6 +1,6 @@
 pkgbase = vulkan-icd-loader-waypure
 	pkgdesc = Vulkan Installable Client Driver (ICD) Loader
-	pkgver = 1.4.341.0
+	pkgver = 1.4.350.0
 	pkgrel = 1
 	url = https://github.com/KhronosGroup/Vulkan-Loader
 	arch = x86_64
@@ -16,7 +16,7 @@ pkgbase = vulkan-icd-loader-waypure
 	provides = libvulkan.so
 	conflicts = vulkan-icd-loader
 	replaces = vulkan-icd-loader
-	source = https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/vulkan-sdk-1.4.341.0.tar.gz
-	sha256sums = fe982697c780a950641bfcf94707135c26c501352242d285fa95d087d691292e
+	source = https://github.com/KhronosGroup/Vulkan-Loader/archive/refs/tags/vulkan-sdk-1.4.350.0.tar.gz
+	sha256sums = 91f88fc43abb36821a568c7fbb3f815e9baf946d5fe187928df279708d45e509
 
 pkgname = vulkan-icd-loader-waypure

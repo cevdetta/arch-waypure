@@ -3,7 +3,7 @@
 
 _pkgname=vulkan-icd-loader
 pkgname=${_pkgname}-waypure
-pkgver=1.4.341.0
+pkgver=1.4.350.0
 pkgrel=1
 pkgdesc="Vulkan Installable Client Driver (ICD) Loader"
 arch=('x86_64')
@@ -19,7 +19,7 @@ provides=("${_pkgname}" 'libvulkan.so')
 conflicts=("${_pkgname}")
 replaces=("${_pkgname}")
 source=("${url}/archive/refs/tags/vulkan-sdk-${pkgver}.tar.gz")
-sha256sums=('fe982697c780a950641bfcf94707135c26c501352242d285fa95d087d691292e')
+sha256sums=('91f88fc43abb36821a568c7fbb3f815e9baf946d5fe187928df279708d45e509')
 
 build() {
   local _cmake_options=(
