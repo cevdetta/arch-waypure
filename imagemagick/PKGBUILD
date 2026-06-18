@@ -3,7 +3,7 @@
 
 _pkgname=imagemagick
 pkgname=${_pkgname}-waypure
-pkgver=7.1.2.16
+pkgver=7.1.2.25
 _pkgver=${pkgver%.*}-${pkgver##*.}
 pkgrel=1
 pkgdesc="An image viewing/manipulation program"
@@ -14,35 +14,35 @@ depends=(
   bash
   bzip2
   cairo
-  djvulibre
+  djvulibre # DJVU support
   fftw
   fontconfig
   freetype2
   glib2
   glibc
-  jbigkit
+  jbigkit # JBIG support
   lcms2
   libgcc
   libgomp
-  libheif
-  libjpeg-turbo
-  libjxl
+  libheif # HEIF support
+  libjpeg-turbo # JPEG support
+  libjxl # JPEG XL support
   liblqr
   libpng
   libraqm
-  libraw
-  librsvg
+  libraw # DNG support
+  librsvg # SVG support
   libstdc++
-  libtiff
+  libtiff # TIFF support
   libtool
-  libultrahdr
-  libwebp
-  libwmf
+  libultrahdr # UHDR support
+  libwebp # WEBP support
+  libwmf # WMF support
   libxml2
-  libzip
-  openexr
-  openjpeg2
-  pango
+  libzip # OpenRaster support
+  openexr # OpenEXR support
+  openjpeg2  # JPEG2000 support
+  pango # Text support
   perl
   xz
   zlib-ng-compat
@@ -63,8 +63,8 @@ provides=("${_pkgname}" 'libmagick')
 conflicts=("${_pkgname}")
 replaces=("${_pkgname}")
 backup=(etc/ImageMagick-7/{colors,delegates,log,mime,policy,quantization-table,thresholds,type,type-{dejavu,ghostscript}}.xml)
-source=("${url}/archive/refs/tags/${_pkgver}.tar.gz")
-sha256sums=('aadfa67a104d14a35339de0f2cc286c973a0f43329770c69e9667a22208750fb')
+source=("${_pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/${_pkgver}.tar.gz")
+sha256sums=('ff33d227d2e1744327280e956ec9f7abaebbd8f48277d16cdad906e05e4794b6')
 
 build() {
   cd "ImageMagick-${_pkgver}"
