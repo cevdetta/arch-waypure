@@ -3,7 +3,7 @@
 
 _pkgname=vulkan-tools
 pkgname=${_pkgname}-waypure
-pkgver=1.4.341.0
+pkgver=1.4.350.0
 pkgrel=1
 pkgdesc="Vulkan tools and utilities"
 arch=('x86_64')
@@ -24,7 +24,7 @@ provides=("${_pkgname}")
 conflicts=("${_pkgname}")
 replaces=("${_pkgname}")
 source=("${url}/archive/refs/tags/vulkan-sdk-${pkgver}.tar.gz")
-sha256sums=('dc65f1ea97dd0b2155c2281a79e87d27183c0737fb96377744091a3c8460ae1e')
+sha256sums=('3079796d51b29ce49dc7b7c7e243df93b343d54c3be9d4a8292c3231b9698deb')
 
 build() {
   local _cmake_options=(
