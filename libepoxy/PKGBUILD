@@ -9,13 +9,13 @@ pkgdesc="Library handling OpenGL function pointer management"
 arch=('x86_64')
 url="https://github.com/anholt/libepoxy"
 license=('MIT')
-depends=('glibc' 'libglvnd-waypure')
+depends=('glibc' 'libglvnd')
 makedepends=('mesa-libgl' 'meson' 'systemd')
 provides=("${_pkgname}" 'libepoxy.so')
 conflicts=("${_pkgname}")
 replaces=("${_pkgname}")
 source=(
-  "$url/archive/refs/tags/$pkgver.tar.gz"
+  "${_pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/${pkgver}.tar.gz"
   'libepoxy-1.5.10-libopengl-fallback.patch'
 )
 sha256sums=(
