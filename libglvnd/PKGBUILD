@@ -8,14 +8,13 @@ pkgrel=1
 pkgdesc="The GL Vendor-Neutral Dispatch library"
 arch=('x86_64')
 url="https://gitlab.freedesktop.org/glvnd/libglvnd"
-license=('custom:BSD-like')
+license=('MIT-feh')
 depends=('glibc')
 makedepends=('meson' 'python')
 optdepends=(
   'mesa: free OpenGL implementation (EGL, GLES, GL)'
 )
-provides=("${_pkgname}" 'libegl' 'libgl' 'libgles' 'libopengl')
-provides+=(libEGL.so libGLESv2.so libGLdispatch.so libOpenGL.so)
+provides=("${_pkgname}" 'libegl' 'libgl' 'libgles' 'libEGL.so' 'libGLdispatch.so' 'libGLESv2.so' 'libOpenGL.so')
 conflicts=("${_pkgname}")
 replaces=("${_pkgname}")
 source=(
