@@ -3,13 +3,13 @@
 
 _pkgname=gtk3
 pkgname=${_pkgname}-waypure
-pkgver=3.24.51
+pkgver=3.24.52
 pkgrel=1
 pkgdesc="GObject-based multi-platform GUI toolkit"
 arch=('x86_64')
 url="https://gitlab.gnome.org/GNOME/gtk"
 license=('LGPL-2.1-or-later')
-depends=('adwaita-fonts' 'adwaita-icon-theme' 'at-spi2-core' 'cairo-waypure' 'dconf' 'fontconfig' 'fribidi' 'gdk-pixbuf2' 'glib2' 'glibc' 'gtk-update-icon-cache' 'harfbuzz' 'libepoxy' 'libcolord' 'libcups' 'libxkbcommon' 'pango-waypure' 'wayland')
+depends=('adwaita-fonts' 'adwaita-icon-theme' 'at-spi2-core' 'cairo' 'dconf' 'fontconfig' 'fribidi' 'gdk-pixbuf2' 'glib2' 'glibc' 'gtk-update-icon-cache' 'harfbuzz' 'libepoxy' 'libcolord' 'libcups' 'libxkbcommon' 'pango' 'wayland')
 makedepends=('glib2-devel' 'meson' 'sassc' 'wayland-protocols')
 provides=("${_pkgname}" 'gtk3-print-backends' 'libgailutil-3.so' 'libgdk-3.so' 'libgtk-3.so')
 conflicts=("${_pkgname}" 'gtk3-print-backends')
@@ -20,7 +20,7 @@ source=(
   'gtk-query-immodules-3.0.hook'
 )
 sha256sums=(
-  'f3c87a20b3380b69efa720f412a0fea6ab6edce021f8ffaf5c4531fe1321b24f'
+  'e62514019679f831fcb37f3d294a761c3a6c14f1d346745ad11d70c2be17146e'
   'a0319b6795410f06d38de1e8695a9bf9636ff2169f40701671580e60a108e229'
 )
 
