@@ -1,0 +1,78 @@
+# Maintainer: cevdetta
+# Contributor: cevdetta
+
+_pkgname=mpv
+pkgname=${_pkgname}-waypure
+pkgver=0.41.0
+pkgrel=1
+pkgdesc="a free, open source, and cross-platform media player"
+arch=('x86_64')
+url="https://github.com/mpv-player/mpv"
+license=('GPL-2.0-or-later AND LGPL-2.1-or-later')
+depends=('ffmpeg' 'glibc' 'hicolor-icon-theme' 'lcms2' 'libarchive' 'libass' 'libjpeg-turbo' 'libpipewire' 'libplacebo' 'libva' 'libxkbcommon' 'luajit' 'uchardet' 'vulkan-icd-loader' 'wayland' 'zimg' 'zlib')
+makedepends=('meson' 'python-docutils' 'vulkan-headers' 'wayland-protocols')
+optdepends=('yt-dlp: for video-sharing websites playback')
+provides=("${_pkgname}" 'libmpv.so')
+conflicts=("${_pkgname}" 'libmpv.so')
+replaces=("${_pkgname}")
+source=("${url}/archive/v${pkgver}/${pkgname%%-*}-${pkgver}.tar.gz")
+sha256sums=('ee21092a5ee427353392360929dc64645c54479aefdb5babc5cfbb5fad626209')
+
+build() {
+  local _meson_options=(
+    --auto-features=disabled
+    # booleans
+    # -Dgpl=true
+    # -Dcplayer=true
+    # -Dlibmpv=true
+    -Dbuild-date=false
+    # -Dtests=false
+    # -Dfuzzers=false
+    # -Ddisable-packet-pool=false
+
+    # misc features
+    -Dcplugins=enabled
+    -Diconv=enabled
+    -Djpeg=enabled
+    -Dlcms2=enabled
+    -Dlibarchive=enabled
+    -Dlibavdevice=enabled
+    -Dlua=luajit
+    -Duchardet=enabled
+    -Dvector=enabled
+    -Dzimg=enabled
+    -Dzlib=enabled
+
+    # audio output features
+    -Dpipewire=enabled
+
+    # video output features
+    -Ddmabuf-wayland=enabled
+    -Dgl=disabled
+    -Dvaapi=enabled
+    -Dvaapi-wayland=enabled
+    -Dvulkan=enabled
+    -Dwayland=enabled
+
+    # manpages
+    -Dmanpage-build=enabled
+  )
+
+  arch-meson "${_pkgname}-${pkgver}" build "${_meson_options[@]}"
+
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  DESTDIR="${pkgdir}" meson install -C build
+  # delete private entries only required for static linking
+  sed -i -e '/Requires.private/d' -e '/Libs.private/d' "${pkgdir}"/usr/lib/pkgconfig/mpv.pc
+
+  install -m0644 "${_pkgname}-${pkgver}"/DOCS/{encoding.rst,tech-overview.txt} "${pkgdir}"/usr/share/doc/mpv
+
+  # install -m0644 "${_pkgname}-${pkgver}"/TOOLS/{umpv,mpv_identify.sh,stats-conv.py,idet.sh,lua/*} -Dt "${pkgdir}"/usr/share/mpv/scripts
+}
