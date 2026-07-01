@@ -3,7 +3,7 @@
 
 _pkgname=imagemagick
 pkgname=${_pkgname}-waypure
-pkgver=7.1.2.25
+pkgver=7.1.2.26
 _pkgver=${pkgver%.*}-${pkgver##*.}
 pkgrel=1
 pkgdesc="An image viewing/manipulation program"
@@ -62,9 +62,10 @@ optdepends=(
 provides=("${_pkgname}" 'libmagick')
 conflicts=("${_pkgname}")
 replaces=("${_pkgname}")
+options+=(libtool)
 backup=(etc/ImageMagick-7/{colors,delegates,log,mime,policy,quantization-table,thresholds,type,type-{dejavu,ghostscript}}.xml)
 source=("${_pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/${_pkgver}.tar.gz")
-sha256sums=('ff33d227d2e1744327280e956ec9f7abaebbd8f48277d16cdad906e05e4794b6')
+sha256sums=('d63594e334e1c410f600fb9370d78d49e4dc6f315722ca4ba083e864e5c354cb')
 
 build() {
   cd "ImageMagick-${_pkgver}"
