@@ -1,0 +1,93 @@
+# Maintainer: cevdetta
+# Contributor: cevdetta
+
+_pkgname=libwmf
+pkgname=${_pkgname}-waypure
+pkgver=0.2.15
+pkgrel=1
+pkgdesc="A library for reading vector images in Microsoft's native Windows Metafile Format (WMF)"
+arch=('x86_64')
+url="https://github.com/caolanm/libwmf"
+license=('LGPL-2.1-or-later')
+depends=(
+  bash
+  expat
+  freetype2
+  glib2
+  glibc
+  libjpeg-turbo
+  libpng
+  zlib
+)
+makedepends=('gdk-pixbuf2')
+optdepends=('gdk-pixbuf2: for pixbuf loader')
+provides=("${_pkgname}")
+conflicts=("${_pkgname}")
+replaces=("${_pkgname}")
+source=(
+  "${url}/releases/download/v${pkgver}/${_pkgname}-${pkgver}.tar.gz"
+  # GENTOO PATCHES
+  'https://codeberg.org/gentoo/gentoo/raw/branch/master/media-libs/libwmf/files/libwmf-0.2.8.4-libpng-1.5.patch'
+  'https://codeberg.org/gentoo/gentoo/raw/branch/master/media-libs/libwmf/files/libwmf-0.2.8.4-pngfix.patch'
+  "${url}/commit/dba34dd82c1bd206a17787ee352c496f74c5db24.patch" # include: Export symbols from libwmf too
+  'https://codeberg.org/gentoo/gentoo/raw/branch/master/media-libs/libwmf/files/libwmf-0.2.15-underlinked-plugin.patch'
+)
+sha256sums=(
+  'bbc90f22b9e86d5f1890d7da11cf7a8e61f429d4c220d900c285021deabe7a52'
+  'ffad4b3657725028bf3250f3555275373b800eacd6b6be5512ef3e5f76563181'
+  '39a47d2d12720cc98ee4669e44c012e855df5de0dcec0636f1fb12918c2d8006'
+  '22ec5f0ea0de58f19e12b99ebb510236e14dde07ff8eb70698c6fb753b62df47'
+  'a0e29519260fcb985b3580b540cdb9c13536ee66e90f4dc39941f2319aa20c49'
+)
+
+prepare() {
+  cd "${_pkgname}-${pkgver}"
+
+  patch -p1 -i ../libwmf-0.2.8.4-libpng-1.5.patch
+  patch -p1 -i ../libwmf-0.2.8.4-pngfix.patch
+  patch -p1 -i ../dba34dd82c1bd206a17787ee352c496f74c5db24.patch
+  patch -p1 -i ../libwmf-0.2.15-underlinked-plugin.patch
+
+  autoreconf -fi
+}
+
+build() {
+  local _make_options=(
+    --prefix=/usr
+
+    --disable-debug
+    # --enable-ansi # [default=no]
+    # --enable-pedantic # [default=no]
+    # --disable-heavy # [default=build all]
+    --without-x # WAYLAND
+    --with-layers # GENTOO [default is yes]
+    --with-expat # ARCH
+    --with-freetype # GENTOO
+    --with-zlib # GENTOO
+    --with-png # GENTOO
+    --with-jpeg # GENTOO
+    --without-libxml2 # EXPAT
+    --with-sys-gd # GENTOO
+    --disable-gd # [default=enabled unless layers are disabled]
+    # --disable-pixbuf # [default=enabled search]
+    # --with-fontdir=DIR # [default=$prefix/share/libwmf/fonts, or $ac_default_prefix/share/libwmf/fonts if prefix is NONE]
+    # --with-sysfontmap=FILE # [default=/usr/share/fonts/fontmap]
+    # --with-xtrafontmap=FILE # [default=$WMF_FONTDIR/fontmap]
+    --with-gsfontmap=/usr/share/ghostscript/Resource/Init/Fontmap.GS # ARCH
+    --with-gsfontdir=/usr/share/fonts/gsfonts # ARCH
+  )
+
+  cd "${_pkgname}-${pkgver}"
+  ./configure "${_make_options[@]}"
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+check() {
+  cd "${_pkgname}-${pkgver}"
+  make check
+}
+
+package() {
+  make DESTDIR="${pkgdir}" -C "${_pkgname}-${pkgver}" install
+}
