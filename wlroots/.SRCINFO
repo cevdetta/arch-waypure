@@ -1,4 +1,4 @@
-pkgbase = wlroots-waypure
+pkgbase = wlroots0.20-waypure
 	pkgdesc = Modular Wayland compositor library without X
 	pkgver = 0.20.1
 	pkgrel = 1
@@ -30,4 +30,4 @@ pkgbase = wlroots-waypure
 	source = https://gitlab.freedesktop.org/wlroots/wlroots/-/releases/0.20.1/downloads/wlroots-0.20.1.tar.gz
 	sha256sums = a8541187baecaa2620938afacde88266cb7efa5928cb09d579d8efb07bc4901b
 
-pkgname = wlroots-waypure
+pkgname = wlroots0.20-waypure

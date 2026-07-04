@@ -3,7 +3,7 @@
 
 _pkgname=wlroots
 _pkgabi=0.20
-pkgname=${_pkgname}-waypure
+pkgname=${_pkgname}${_pkgabi}-waypure
 pkgver=0.20.1
 pkgrel=1
 pkgdesc="Modular Wayland compositor library without X"
@@ -28,6 +28,7 @@ build() {
     -Dbackends=drm,libinput
     -Dallocators=gbm,udmabuf
     -Dsession=enabled
+    # -Dtests=false # 0.20.2
     -Dcolor-management=enabled
     -Dlibliftoff=enabled
   )
