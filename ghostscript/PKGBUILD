@@ -1,0 +1,188 @@
+# Maintainer: cevdetta
+# Contributor: cevdetta
+
+_pkgname=ghostscript
+pkgname=${_pkgname}-waypure
+pkgver=10.07.1
+pkgrel=1
+pkgdesc="An interpreter for the PostScript language"
+arch=('x86_64')
+url="https://github.com/ArtifexSoftware/ghostpdl-downloads"
+license=('AGPL-3.0-or-later')
+depends=(
+  cairo
+  fontconfig
+  freetype2
+  gdk-pixbuf2
+  glib2
+  glibc
+  ijs
+  jbig2dec
+  lcms2
+  libcups
+  libidn
+  libjpeg-turbo
+  libpaper
+  libpng
+  libtiff
+  openjpeg2
+  poppler-data
+  sh
+  zlib
+)
+makedepends=('gtk3' 'gnutls' 'glu' 'freeglut')
+optdepends=('gtk3: needed for gsx')
+provides=("${_pkgname}")
+conflicts=("${_pkgname}" 'ghostpcl' 'ghostxps')
+replaces=("${_pkgname}" 'ghostpcl' 'ghostxps')
+source=(
+  "${url}/releases/download/gs${pkgver//./}/${_pkgname}-${pkgver}.tar.gz"
+  '2010_add_build_timestamp_setting.patch' # ARCH
+  'https://src.fedoraproject.org/rpms/ghostscript/raw/rawhide/f/0001-Reinstate-pdf2dsc.patch' # FEDORA
+)
+sha256sums=(
+  'SKIP'
+  'SKIP'
+  'SKIP'
+)
+
+prepare() {
+  cd "${_pkgname}-${pkgver}"
+
+  # *** remove after final decision ***
+  # new in 9.54.0:
+  # https://www.ghostscript.com/doc/9.54.0/News.htm
+
+  # 1) inclusion of the tesseract/leptonica sources for OCR capabilities
+  # at the moment we # support linking with tesseract/leptonica shared libraries.
+  # As is normal with such included libraries, deleting those directories and (re)running
+  # configure (on Unix like systems) will automatically build without the OCR functionality.
+  # increases package size ghostpcl 2.7->4.9MB | ghostscript 18->23MB | ghostxps 2,7->4.9MB
+  # https://www.ghostscript.com/doc/9.54.0/VectorDevices.htm#UseOCR -
+  # this doesn't seem to be worth to keep enabled until linking with shared libs is supported
+  rm -r tesseract leptonica
+
+  # 2) new directory addition in the source tree: "extract/".
+  # It contains the implementation for the writing of docx format files used by the
+  # new "docxwrite" device. This is *not* a "thirdparty library".
+  # For distribution package maintainers, if you want your packaged Ghostscript to include
+  # the "docxwrite" device, # delete this directory.
+  # ^ this one doesn't affect package size - so let's keep it
+
+  # force it to use system-libs
+  rm -r cups/libs freetype ijs jbig2dec jpeg lcms2mt libpng openjpeg tiff zlib
+  # lcms2mt is the new lcms2 fork aimed to replace lcms2 in a thread safe way
+
+  # http://git.ghostscript.com/?p=ghostpdl.git;a=commit;h=40dc5b409c6262b18b4bf5386b5482ead4c511e3
+  # libs link unwanted to libgpdl that isn't installed
+  rm -rf gpdl
+
+  # Remove internal CMaps (CMaps from poppler-data are used instead)
+  rm -r Resource/CMap
+
+  # Debian: # allow the build timestamp to be externally set
+  patch -Np1 -i ../2010_add_build_timestamp_setting.patch
+  patch -Np1 -i ../0001-Reinstate-pdf2dsc.patch
+}
+
+build() {
+  local _make_options=(
+    --prefix=/usr
+    --enable-shared
+    --disable-static
+
+    # Optional Features:
+    # --disable-contrib # include contributed drivers
+    # --disable-sse2 #  use sse2 instrinsics
+    # --disable-neon #  use neon instrinsics
+    --enable-threading # for multithreaded rendering
+    --enable-fontconfig # ARCH GENTOO
+    --enable-freetype # ARCH GENTOO
+    # --disable-dbus # include dbus support
+    # --disable-cups # include CUPS support
+    --enable-openjpeg # ARCH GENTOO
+    # --disable-gtk  #  build the gtk loader
+    --disable-compile-inits # ARCH GENTOO
+    # --disable-hidden-visibility # expose all shared library symbols even those which are not part of its public API
+    # --enable-dynamic # Enable dynamically loaded drivers (note: this option is deprecated because it is incompatible with hidden symbols - use --disable-hidden-visibility
+    # --disable-bswap32 # use bswap32 instrinsic
+    # --disable-byteswap-h # use byteswap.h functions
+    # --enable-mkromfs-quiet # emit mkromfs verbose output
+
+    # Optional Packages:
+    --without-tesseract     # try to use the Tesseract library for OCR
+    # --with-libiconv=[no/gnu/native] # use the libiconv library
+    # --without-libidn        # use libidn to support Unicode passwords
+    --with-libpaper # ARCH GENTOO
+    # --with-ufst=UFST_ROOT_DIR # Use UFST
+    # --without-local-zlib    # check for local zlib sources (has no effect on AUX toolchain when cross-building)
+    # --without-local-brotli  # check for local brotli sources (has no effect on AUX toolchain when cross-building)
+    # --with-libtiff       # use of libtiff
+    --with-system-libtiff # ARCH GENTOO
+    # --without-pdftoraster   # include CUPS' pdftoraster filter
+    # --with-local-cups       # Force using the GS supplied cups code - only useful for debugging
+    # --with-cups-serverbin   # the "cups-config --serverbin" path
+    # --with-cups-serverroot  # the "cups-config --serverroot" path
+    # --with-cups-datadir     # the "cups-config --datadir" path
+    --with-ijs # ARCH GENTOO
+    --with-jbig2dec # ARCH GENTOO
+    # --without-urf  #  try to include URF support
+    # --without-so   #  try to include SmartOffice support
+    # --without-cal  #  try to use the CAL library for acceleration
+    --without-x # WAYLAND -ARCH
+    # --with-gs=NAME           #  Ghostscript executible [[gs]]
+    # --with-pcl=NAME          #  GhostPCL executible (if the source is available, ignored otherwise) [[gpcl6]]
+    # --with-xps=NAME          #  GhostXPS executible (if the source is available, ignored otherwise) [[gxps]]
+    # --with-pdf=NAME          #  Ghostpdf executible (if the source is available, ignored otherwise) [[gpdf]]
+    # --with-gpdl=NAME         #  GhostPDL executible (if the source is available, ignored otherwise) [[gpdl]]
+    --with-drivers=ALL # ARCH GENTOO
+    --with-fontpath=/usr/share/fonts/gsfonts # ARCH GENTOO
+    # --with-tessdata         # set tesseract data search path
+    # --with-memory-alignment # Allows setting minimum alignment for the memory manager (4 or 8 bytes)
+    # --without-gnu-make      # GNU make features
+    # --with-exe-ext=EXT      # set the file name executable extension (must include any separator e.g. the period in ".exe")
+    # --with-aux-exe-ext=EXT  # set the file name executable extension for auxiliary binaries (must include any separator e.g. the period in ".exe")
+    --without-versioned-path # ARCH #  use file paths containing the version of GS.
+  )
+
+  cd "${_pkgname}-${pkgver}"
+
+  # gcc14 buildfix
+  # export CFLAGS+=" -Wno-incompatible-pointer-types -Wno-int-conversion"
+
+  # Version 10.07.1 (2026-05-07)
+  # The wider adoption of "C99" and later features has reached the point where we must ease our policy on this area.
+  # The Ghostscript/GhostPDL codebase will remain "C89" plus widely supported extensions but, as of the 10.08.0 release,
+  # our included third party libraries will will be permitted to use "C99" and potentially later features.
+
+  # fix #3 - fall back to GNU dialect of ISO C17 - from Fedora commit:
+  # The code defines a custom 'bool' type (as an 'int'), which is incompatible
+  # with C23 in which bool is a keyword, and trying to use <stdbool.h> fails
+  # because 'int' and 'bool' are used interchangeably in the code.
+  # see also https://bugs.ghostscript.com/show_bug.cgi?id=708608
+  export CFLAGS="${CFLAGS} -std=gnu17" # ARCH GENTOO
+	export CXXFLAGS="${CXXFLAGS} -std=gnu++17" # ARCH GENTOO
+
+  ./configure "${_make_options[@]}"
+  make so
+}
+
+package() {
+  cd "${_pkgname}-${pkgver}"
+
+  make DESTDIR="${pkgdir}" soinstall
+
+  # gsc collides with gambit gambit-c
+  mv "${pkgdir}"/usr/bin/{gsc,gs}
+  ln -s gs "${pkgdir}"/usr/bin/ghostscript
+  ln -s /usr/share/man/man1/gs.1.gz "${pkgdir}"/usr/share/man/man1/ghostscript.1
+
+  # remove obsolete lpr bsd/Unix related files
+  rm -rv "${pkgdir}"/usr/bin/{lprsetup.sh,unix-lpr.sh}
+
+  # install the CMaps from poppler-data
+  # mkdir "${pkgdir}"/usr/share/ghostscript/Resource
+  ln -s /usr/share/poppler/cMap "${pkgdir}"/usr/share/ghostscript/Resource/CMap
+
+  install -Dt "${pkgdir}"/usr/share/licenses/${pkgname} -m644 LICENSE
+}
