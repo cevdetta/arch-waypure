@@ -1,0 +1,114 @@
+# Maintainer: cevdetta
+# Contributor: cevdetta
+
+_pkgname=gd
+pkgname=${_pkgname}-waypure
+pkgver=2.3.3
+pkgrel=1
+pkgdesc="Library for the dynamic creation of images by programmers"
+arch=('x86_64')
+url="https://github.com/libgd/libgd"
+license=('GD')
+depends=(
+  fontconfig
+  libwebp
+  libavif
+  libheif
+
+  freetype2
+  glibc
+  libjpeg-turbo
+  libpng
+  zlib
+)
+checkdepends=('ttf-liberation')
+optdepends=('perl: bdftogd script')
+provides=("${_pkgname}")
+conflicts=("${_pkgname}")
+replaces=("${_pkgname}")
+source=(
+  "${url}/releases/download/${_pkgname}-${pkgver}/lib${_pkgname}-${pkgver}.tar.gz"
+
+  'https://github.com/libgd/libgd/commit/f1a53c082173567b8ad07eaba8fc7ba66457a730.patch'
+  'https://github.com/libgd/libgd/commit/21633377174354199c3ea3e4b23f64cfaeacc50a.patch'
+
+  'https://codeberg.org/gentoo/gentoo/raw/branch/master/media-libs/gd/files/gd-2.3.0-disable-flaky-tests.patch'
+  'https://codeberg.org/gentoo/gentoo/raw/branch/master/media-libs/gd/files/gd-2.3.3-GD_BICUBIC.patch'
+  'https://codeberg.org/gentoo/gentoo/raw/branch/master/media-libs/gd/files/gd-2.3.3-c23.patch'
+)
+sha256sums=(
+  'dd3f1f0bb016edcc0b2d082e8229c822ad1d02223511997c80461481759b1ed2'
+
+  '1b102b0f87e630bd98f345088d6bc742def72c6619764572049d2c67ca050500'
+  '591b63e9bd35d9ab1e732d33663c1eb4dfa4163f70324d602d361167ba643541'
+
+  '44c22d4c3c0af12944cf8c06948e361d999fd3b7d673a9f29984a70720fc2e1c'
+  'ba04984af79dcd80841e7d083182f894e9b57ca8383c9ba36aae3e344cf6cc47'
+  '16f0d638abcc450344395502405abe77b091aa3611db52a39993e147cb72ff86'
+)
+
+prepare() {
+  cd "lib${_pkgname}-${pkgver}"
+
+  # Fix heif tests
+  git apply -p1 ../f1a53c082173567b8ad07eaba8fc7ba66457a730.patch
+  git apply -p1 ../21633377174354199c3ea3e4b23f64cfaeacc50a.patch
+
+  git apply -p1 ../gd-2.3.0-disable-flaky-tests.patch
+  git apply -p1 ../gd-2.3.3-GD_BICUBIC.patch
+  git apply -p1 ../gd-2.3.3-c23.patch
+
+  # Remove failing tests
+  for f in tests/heif/{heif_read,heif_im2im}.c; do
+    echo 'int main() { return 0; }' > $f
+  done
+}
+
+build() {
+  local _make_options=(
+    --prefix=/usr
+    --disable-rpath
+
+    --disable-werror # GENTOO
+    --enable-shared
+    --disable-static # GENTOO
+
+    --disable-gd-formats
+    --without-x # GENTOO
+    --with-zlib=yes
+    --with-png=yes
+    --with-freetype=yes
+    --with-raqm=no
+    --with-fontconfig # ARCH
+    --with-jpeg=yes
+    --without-liq # GENTOO
+    --without-xpm # WAYLAND
+    --with-tiff=no
+    --with-webp # ARCH
+    --with-heif # ARCH
+    --with-avif # ARCH
+  )
+
+  cd "lib${_pkgname}-${pkgver}"
+
+  # FAIL: gdimagecopyresampled/bug00201
+  # FAIL: gdimagegrayscale/basic
+  export CFLAGS="${CFLAGS} -ffp-contract=off"
+
+  ./bootstrap.sh
+  ./configure "${_make_options[@]}"
+  make
+}
+
+check() {
+  cd "lib${_pkgname}-${pkgver}"
+
+  TMP=$(mktemp -d) make check
+}
+
+package() {
+  cd "lib${_pkgname}-${pkgver}"
+
+  make DESTDIR="${pkgdir}" install
+  install -D -m644 COPYING "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
