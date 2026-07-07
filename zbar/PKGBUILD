@@ -1,0 +1,99 @@
+# Maintainer: cevdetta
+# Contributor: cevdetta
+
+_pkgname=zbar
+pkgname=${_pkgname}-waypure
+pkgver=0.23.93
+pkgrel=1
+pkgdesc="Application and library for reading bar codes from various sources"
+arch=('x86_64')
+url="https://github.com/mchehab/zbar"
+license=('LGPL-2.1-or-later')
+depends=(
+  dbus
+  gdk-pixbuf2
+  glib2
+  glibc
+  imagemagick
+  libjpeg-turbo
+  v4l-utils
+)
+makedepends=(
+  docbook-xsl
+  glib2-devel
+  python
+  xmlto
+)
+optdepends=(
+  'gtk3: for zbar-gtk'
+  'python: for zbar python bindings'
+)
+provides=("${_pkgname}" 'zbar-gtk' 'zbar-qt' 'python-zbar')
+conflicts=("${_pkgname}" 'zbar-gtk' 'zbar-qt' 'python-zbar')
+replaces=("${_pkgname}" 'zbar-gtk' 'zbar-qt' 'python-zbar')
+source=(
+  "${url}/archive/refs/tags/0.23.93.tar.gz"
+  "${url}/commit/368571ff.patch"
+  "${url}/commit/a549566e.patch"
+)
+sha256sums=(
+  '212dfab527894b8bcbcc7cd1d43d63f5604a07473d31a5f02889e372614ebe28'
+  'ee6db25d4102d73eb3f6c7c4545d3581b08b5168cf9e5e1809318968f1988375'
+  'd34f3156a4a4b21541eddac7ed3477721194f92a63ec8462ec796e7fa097bc7c'
+)
+
+prepare() {
+  cd "${_pkgname}-${pkgver}"
+
+  patch -Np1 -i ../368571ff.patch # Fix build
+  patch -Np1 -i ../a549566e.patch # Fix build
+  autoreconf -vfi
+}
+
+build() {
+  cd "${_pkgname}-${pkgver}"
+
+  local _make_options=(
+    --prefix=/usr
+    --enable-shared
+    --disable-static
+    --disable-rpath
+    # --disable-nls         # do not use Native Language Support
+    --disable-static-qt     # Produce a static library for libzbarcam-qt
+    --enable-pthread        # omit support for threaded applications
+    # --disable-doc         # disable building docs
+    # --disable-video       # exclude video scanner features
+    --disable-introspection # Enable introspection for this build
+    --disable-assert        # turn off assertions
+
+    # Optional Packages:
+    --without-directshow   # LINUX
+    --without-x            # WAYLAND
+    --without-xshm         # WAYLAND
+    --without-xv           # WAYLAND
+    --with-dbus            # ARCH
+    --with-dbusconfdir=/usr/share # path to D-Bus config directory
+    --with-jpeg            # ARCH
+    --with-imagemagick     # ARCH
+    # --with-graphicsmagick # use GraphicsMagick alternative to ImageMagick
+    # --with-npapi         # enable support for Firefox/Mozilla/OpenOffice plugin
+    --with-gtk=gtk3        # ARCH. choices: no, auto, gtk2, gtk3 (default is auto)
+    --without-gir          # disable support for GObject Introspection
+    # --with-python        # Specify support for Python. Valid values are: no, auto, python2, python3 (default is auto). Please notice that PYTHON var, if especified, takes precedence.
+    # --with-python-sys-prefix # use Python's sys.prefix and sys.exec_prefix values
+    # --with-python_prefix # override the default PYTHON_PREFIX
+    # --with-python_exec_prefix # override the default PYTHON_EXEC_PREFIX
+    --with-qt              # ARCH
+    --with-qt6             # If --with-qt, enable experimental support for Qt6 widget (currently broken)
+    # --without-java       # disable support for Java interface
+  )
+
+  ./configure "${_make_options[@]}"
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+package() {
+  cd "${_pkgname}-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+}
