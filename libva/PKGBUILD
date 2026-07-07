@@ -3,7 +3,7 @@
 
 _pkgname=libva
 pkgname=${_pkgname}-waypure
-pkgver=2.23.0
+pkgver=2.24.0
 pkgrel=1
 pkgdesc="Video Acceleration (VA) API for Linux"
 arch=('x86_64')
@@ -20,7 +20,7 @@ provides=("${_pkgname}" 'libva.so' 'libva-drm.so' 'libva-wayland.so')
 conflicts=("${_pkgname}")
 replaces=("${_pkgname}")
 source=("$url/releases/download/$pkgver/${pkgname%%-*}-$pkgver.tar.bz2")
-sha256sums=('9ac190a87017bfd49743248f5df7cf3b18a99a9962175caf6bbe3f1ea41b6dbb')
+sha256sums=('56fab4e482dca2c9e8280d5057294b9faa789d637f97cc394a0c6ec08159060c')
 
 build() {
   local _meson_options=(
