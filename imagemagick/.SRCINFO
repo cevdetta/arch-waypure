@@ -1,6 +1,6 @@
 pkgbase = imagemagick-waypure
 	pkgdesc = An image viewing/manipulation program
-	pkgver = 7.1.2.27
+	pkgver = 7.1.2.29
 	pkgrel = 1
 	url = https://github.com/ImageMagick/ImageMagick
 	arch = x86_64
@@ -64,7 +64,7 @@ pkgbase = imagemagick-waypure
 	backup = etc/ImageMagick-7/type.xml
 	backup = etc/ImageMagick-7/type-dejavu.xml
 	backup = etc/ImageMagick-7/type-ghostscript.xml
-	source = imagemagick-7.1.2.27.tar.gz::https://github.com/ImageMagick/ImageMagick/archive/refs/tags/7.1.2-27.tar.gz
-	sha256sums = 485dad5226fda2417ea65f3eb6e3f63e7d5dfacacdf6f57f9c39b6ef1e3cb667
+	source = imagemagick-7.1.2.29.tar.gz::https://github.com/ImageMagick/ImageMagick/archive/refs/tags/7.1.2-29.tar.gz
+	sha256sums = b05924ad73c6932ba62c9b32f338f0619b90b767162c8b767f3566556187a284
 
 pkgname = imagemagick-waypure
