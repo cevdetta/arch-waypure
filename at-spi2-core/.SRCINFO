@@ -1,6 +1,6 @@
 pkgbase = at-spi2-core-waypure
 	pkgdesc = Protocol definitions and daemon for D-Bus at-spi
-	pkgver = 2.60.5
+	pkgver = 2.60.6
 	pkgrel = 1
 	url = https://gitlab.gnome.org/GNOME/at-spi2-core
 	arch = x86_64
@@ -14,14 +14,14 @@ pkgbase = at-spi2-core-waypure
 	depends = libgcc
 	depends = systemd-libs
 	provides = at-spi2-core
-	provides = at-spi2-atk=2.60.5-1
-	provides = atk=2.60.5-1
+	provides = at-spi2-atk=2.60.6-1
+	provides = atk=2.60.6-1
 	provides = libatk-1.0.so
 	provides = libatk-bridge-2.0.so
 	provides = libatspi.so
 	conflicts = at-spi2-core
 	replaces = at-spi2-core
-	source = https://gitlab.gnome.org/GNOME/at-spi2-core/-/archive/2.60.5/at-spi2-core-2.60.5.tar.gz
-	sha256sums = 8dcfbafae4338774ac366e420f3177ce9859315e918ed430a499d48cf56194e0
+	source = https://gitlab.gnome.org/GNOME/at-spi2-core/-/archive/2.60.6/at-spi2-core-2.60.6.tar.gz
+	sha256sums = 3ad6bcc25b884ac154aa8c12e2d907d04b514d47d06e8a07ec18ffcf1c98dc26
 
 pkgname = at-spi2-core-waypure
