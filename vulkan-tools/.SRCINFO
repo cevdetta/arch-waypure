@@ -1,6 +1,6 @@
 pkgbase = vulkan-tools-waypure
 	pkgdesc = Vulkan tools and utilities
-	pkgver = 1.4.350.1
+	pkgver = 1.4.357.0
 	pkgrel = 1
 	url = https://github.com/KhronosGroup/Vulkan-Tools
 	arch = x86_64
@@ -21,7 +21,7 @@ pkgbase = vulkan-tools-waypure
 	provides = vulkan-tools
 	conflicts = vulkan-tools
 	replaces = vulkan-tools
-	source = https://github.com/KhronosGroup/Vulkan-Tools/archive/refs/tags/vulkan-sdk-1.4.350.1.tar.gz
-	sha256sums = 502b53a585f49036e45372724f652bacc1fad2c62396e321bc8f5fbc031c14d5
+	source = https://github.com/KhronosGroup/Vulkan-Tools/archive/refs/tags/vulkan-sdk-1.4.357.0.tar.gz
+	sha256sums = 6c94b86c850808aba316d999dd6742133d6197ae2135248d3a8aed9b32ebd1f7
 
 pkgname = vulkan-tools-waypure
