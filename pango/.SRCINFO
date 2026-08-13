@@ -1,6 +1,6 @@
 pkgbase = pango-waypure
 	pkgdesc = A library for layout and rendering of text
-	pkgver = 1.58.0
+	pkgver = 1.58.2
 	pkgrel = 1
 	url = https://gitlab.gnome.org/GNOME/pango
 	arch = x86_64
@@ -19,7 +19,7 @@ pkgbase = pango-waypure
 	provides = libpangoft2-1.0.so
 	conflicts = pango
 	replaces = pango
-	source = https://gitlab.gnome.org/GNOME/pango/-/archive/1.58.0/pango-1.58.0.tar.gz
-	sha256sums = 1672290d28193de8985322c64ade30fa5f0308eeb2737a03f214cdf5d8878464
+	source = https://gitlab.gnome.org/GNOME/pango/-/archive/1.58.2/pango-1.58.2.tar.gz
+	sha256sums = 67b20e56a51aad6673261d2b7d41ced3687e59b82fe8c10a40ea43baf304cf0e
 
 pkgname = pango-waypure
