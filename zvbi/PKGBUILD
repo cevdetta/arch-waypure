@@ -3,15 +3,16 @@
 
 _pkgname=zvbi
 pkgname=${_pkgname}-waypure
-pkgver=0.2.44
+pkgver=0.2.45
 pkgrel=1
 pkgdesc="VBI capture and decoding library"
 arch=('x86_64')
 url="https://github.com/zapping-vbi/zvbi"
 license=(
-  'BSD'
-  'GPL2'
-  'LGPL2.1'
+  'GPL-2.0-or-later'
+  'GPL-2.0-only'
+  'LGPL-2.1-or-later'
+  'BSD-2-Clause'
   'MIT'
 )
 depends=('glibc' 'libgcc' 'libpng')
@@ -20,7 +21,7 @@ provides=("${_pkgname}")
 conflicts=("${_pkgname}")
 replaces=("${_pkgname}")
 source=("${url}/archive/refs/tags/v${pkgver}.tar.gz")
-sha256sums=('bca620ab670328ad732d161e4ce8d9d9fc832533cb7440e98c50e112b805ac5e')
+sha256sums=('e6c954fde2a5a635187f19e1ab870a88c1a982012c5f1b33b8f2513e0ab7a50e')
 
 prepare() {
   cd "zvbi-${pkgver}"

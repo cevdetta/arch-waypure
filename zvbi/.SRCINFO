@@ -1,0 +1,22 @@
+pkgbase = zvbi-waypure
+	pkgdesc = VBI capture and decoding library
+	pkgver = 0.2.45
+	pkgrel = 1
+	url = https://github.com/zapping-vbi/zvbi
+	arch = x86_64
+	license = GPL-2.0-or-later
+	license = GPL-2.0-only
+	license = LGPL-2.1-or-later
+	license = BSD-2-Clause
+	license = MIT
+	makedepends = make
+	depends = glibc
+	depends = libgcc
+	depends = libpng
+	provides = zvbi
+	conflicts = zvbi
+	replaces = zvbi
+	source = https://github.com/zapping-vbi/zvbi/archive/refs/tags/v0.2.45.tar.gz
+	sha256sums = e6c954fde2a5a635187f19e1ab870a88c1a982012c5f1b33b8f2513e0ab7a50e
+
+pkgname = zvbi-waypure
