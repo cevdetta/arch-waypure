@@ -1,6 +1,6 @@
 pkgbase = ghostscript-waypure
 	pkgdesc = An interpreter for the PostScript language
-	pkgver = 10.07.1
+	pkgver = 10.08.0
 	pkgrel = 1
 	url = https://github.com/ArtifexSoftware/ghostpdl-downloads
 	arch = x86_64
@@ -36,11 +36,11 @@ pkgbase = ghostscript-waypure
 	replaces = ghostscript
 	replaces = ghostpcl
 	replaces = ghostxps
-	source = https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10071/ghostscript-10.07.1.tar.gz
+	source = https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10080/ghostscript-10.08.0.tar.gz
 	source = 2010_add_build_timestamp_setting.patch
 	source = https://src.fedoraproject.org/rpms/ghostscript/raw/rawhide/f/0001-Reinstate-pdf2dsc.patch
-	sha256sums = SKIP
-	sha256sums = SKIP
-	sha256sums = SKIP
+	sha256sums = caf199e3f233f1290b27d0972d636f66c303355f2353309b7bfddf1edda06b3d
+	sha256sums = ce6ce3cca271d12de97d99e847f47c1fece0be2b663861654baa217857c00339
+	sha256sums = 79a8daa5e456c7c005f8e4180a06217ddedf0936e309a43f4a63d157d6ca43f3
 
 pkgname = ghostscript-waypure

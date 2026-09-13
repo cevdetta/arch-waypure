@@ -3,7 +3,7 @@
 
 _pkgname=ghostscript
 pkgname=${_pkgname}-waypure
-pkgver=10.07.1
+pkgver=10.08.0
 pkgrel=1
 pkgdesc="An interpreter for the PostScript language"
 arch=('x86_64')
@@ -40,11 +40,9 @@ source=(
   '2010_add_build_timestamp_setting.patch' # ARCH
   'https://src.fedoraproject.org/rpms/ghostscript/raw/rawhide/f/0001-Reinstate-pdf2dsc.patch' # FEDORA
 )
-sha256sums=(
-  'SKIP'
-  'SKIP'
-  'SKIP'
-)
+sha256sums=('caf199e3f233f1290b27d0972d636f66c303355f2353309b7bfddf1edda06b3d'
+            'ce6ce3cca271d12de97d99e847f47c1fece0be2b663861654baa217857c00339'
+            '79a8daa5e456c7c005f8e4180a06217ddedf0936e309a43f4a63d157d6ca43f3')
 
 prepare() {
   cd "${_pkgname}-${pkgver}"
@@ -161,7 +159,7 @@ build() {
   # because 'int' and 'bool' are used interchangeably in the code.
   # see also https://bugs.ghostscript.com/show_bug.cgi?id=708608
   export CFLAGS="${CFLAGS} -std=gnu17" # ARCH GENTOO
-	export CXXFLAGS="${CXXFLAGS} -std=gnu++17" # ARCH GENTOO
+  export CXXFLAGS="${CXXFLAGS} -std=gnu++17" # ARCH GENTOO
 
   ./configure "${_make_options[@]}"
   make so
