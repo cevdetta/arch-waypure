@@ -3,7 +3,7 @@
 
 _pkgname=at-spi2-core
 pkgname=${_pkgname}-waypure
-pkgver=2.60.6
+pkgver=2.60.7
 pkgrel=1
 pkgdesc="Protocol definitions and daemon for D-Bus at-spi"
 arch=('x86_64')
@@ -15,7 +15,7 @@ provides=("${_pkgname}" "at-spi2-atk=${pkgver}-${pkgrel}" "atk=${pkgver}-${pkgre
 conflicts=("${_pkgname}")
 replaces=("${_pkgname}")
 source=("$url/-/archive/$pkgver/at-spi2-core-$pkgver.tar.gz")
-sha256sums=('3ad6bcc25b884ac154aa8c12e2d907d04b514d47d06e8a07ec18ffcf1c98dc26')
+sha256sums=('aa68e37bceb8b990233d367530ecc84c0a862bae0a6a45c2d6f38df11bdc8b5b')
 
 build() {
   local _meson_options=(
