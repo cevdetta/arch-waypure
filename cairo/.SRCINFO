@@ -1,6 +1,6 @@
 pkgbase = cairo-waypure
 	pkgdesc = 2D graphics library with support for multiple output devices
-	pkgver = 1.18.4
+	pkgver = 1.18.6
 	pkgrel = 1
 	url = https://gitlab.freedesktop.org/cairo/cairo
 	arch = x86_64
@@ -20,7 +20,7 @@ pkgbase = cairo-waypure
 	provides = libcairo-script-interpreter.so
 	conflicts = cairo
 	replaces = cairo
-	source = https://gitlab.freedesktop.org/cairo/cairo/-/archive/1.18.4/cairo-1.18.4.tar.gz
-	sha256sums = 2f3e6e665dbbb420809102b71ad7d0f7ce870a0b1bf8b34c073f06aefb511fc6
+	source = https://gitlab.freedesktop.org/cairo/cairo/-/archive/1.18.6/cairo-1.18.6.tar.gz
+	sha256sums = a95ae4f522ef24312af7339563f65e0a03b1ad3d58a46df73d2ef690fe15ae7f
 
 pkgname = cairo-waypure
