@@ -1,0 +1,31 @@
+pkgbase = libpulse-waypure
+	pkgdesc = A featureful, general-purpose sound server (client library)
+	pkgver = 17.0+r98+gb096704c0
+	pkgrel = 1
+	url = https://www.freedesktop.org/wiki/Software/PulseAudio/
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	makedepends = git
+	makedepends = meson
+	makedepends = perl
+	makedepends = perl-xml-parser
+	makedepends = systemd
+	depends = bash
+	depends = dbus
+	depends = glib2
+	depends = glibc
+	depends = libasyncns
+	depends = libsndfile
+	depends = systemd-libs
+	optdepends = pipewire-pulse: PulseAudio backend via PipeWire
+	provides = libpulse
+	provides = libpulse.so
+	provides = libpulse-simple.so
+	provides = libpulse-mainloop-glib.so
+	conflicts = libpulse
+	replaces = libpulse
+	backup = etc/pulse/client.conf
+	source = git+https://gitlab.freedesktop.org/pulseaudio/pulseaudio.git#commit=b096704c0d42c5e784deb781a07b23cfb5286a82
+	sha256sums = SKIP
+
+pkgname = libpulse-waypure

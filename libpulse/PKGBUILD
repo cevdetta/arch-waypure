@@ -1,0 +1,164 @@
+# Maintainer: cevdetta
+# Contributor: cevdetta
+
+_pkgname=libpulse
+pkgname=${_pkgname}-waypure
+pkgver=17.0+r98+gb096704c0
+pkgrel=1
+pkgdesc="A featureful, general-purpose sound server (client library)"
+arch=('x86_64')
+url="https://www.freedesktop.org/wiki/Software/PulseAudio/"
+license=('LGPL-2.1-or-later')
+depends=(
+  bash
+  dbus
+  glib2
+  glibc
+  libasyncns
+  libsndfile
+  systemd-libs
+)
+makedepends=(
+  git
+  meson
+  perl # man=true runs the vendored man/xmltoman script (needs perl + XML::Parser).
+  # NOTE: don't swap these for the xmltoman package like Arch does. Upstream
+  # ignores /usr/bin/xmltoman and always runs its vendored copy
+  # (man/meson.build:46), so that package would only drag in these same two
+  # deps transitively while installing a binary nothing calls.
+  perl-xml-parser
+  systemd
+)
+optdepends=(
+  'pipewire-pulse: PulseAudio backend via PipeWire'
+)
+provides=(
+  "${_pkgname}"
+  libpulse.so
+  libpulse-simple.so
+  libpulse-mainloop-glib.so
+)
+conflicts=("${_pkgname}")
+replaces=("${_pkgname}")
+backup=('etc/pulse/client.conf')
+_commit=b096704c0d42c5e784deb781a07b23cfb5286a82 # master, same as Arch
+source=(
+  "git+https://gitlab.freedesktop.org/pulseaudio/pulseaudio.git#commit=$_commit"
+)
+sha256sums=('SKIP')
+
+pkgver() {
+  cd pulseaudio
+  git describe --tags | sed 's/^v//;s/[^-]*-g/r&/;s/-/+/g'
+}
+
+prepare() {
+  cd pulseaudio
+
+  # Freeze version before patching (same as Arch, keeps pkgver() stable)
+  ./git-version-gen doesnt-exist >.tarball-version
+}
+
+build() {
+  # Client-only, same as Gentoo media-libs/libpulse:
+  # daemon=false + client=true. Everything daemon-side stays disabled.
+  # PipeWire order stays: pipewire-native > pulse (pipewire-pulse) >
+  # alsa (pipewire-alsa) > jack (pipewire-jack). Pulse second is correct:
+  # most apps already speak Pulse and pipewire-pulse keeps per-app
+  # volume/routing; ALSA emulation loses that, JACK is pro-audio only.
+  local _meson_options=(
+    -D daemon=false # GENTOO description : 'Enable building and installation of pulseaudio daemon and supporting configuration files'
+    -D client=true # GENTOO description : 'Build and install pulseaudio client libraries and utilities'
+    -D doxygen=disabled # GENTOO description : 'Enable building and installation of documentation generated with doxygen'
+    -D gcov=false # GENTOO description : 'Enable optional gcov coverage analysis'
+    -D man=true # ARCH description : 'Enable building and installation of man pages' (boolean: true/false, disabled fails configure. Arch passes nothing and ships man pages)
+    -D tests=disabled # description : 'Enable unit tests' (Arch runs them in check(); you skip them for a minimal client build)
+
+    # -D system_user='pulse' # description : 'User for running the PulseAudio daemon as a system-wide instance (pulse)' (system-wide daemon only)
+    # -D system_group='pulse' # description : 'Group for running the PulseAudio daemon as a system-wide instance (pulse)' (system-wide daemon only)
+    # -D access_group='pulse-access' # description : 'Group which is allowed access to a system-wide PulseAudio daemon (pulse-access)' (system-wide daemon only)
+    -D database=simple # GENTOO choices : [ 'gdbm', 'tdb', 'simple' ] (daemon store; simple drops the tdb dep)
+    # -D legacy-database-entry-format=auto # description : 'Try to load legacy (< 1.0) database files (card, device and volume restore)' (daemon restore only)
+    -D stream-restore-clear-old-devices=true # ARCH GENTOO description : 'Forget per-stream routing settings that have been set before version 14.0. Recommended when using GNOME. See https://gitlab.freedesktop.org/pulseaudio/pulseaudio/-/issues/832'
+    -D running-from-build-tree=false # GENTOO description : 'Enable running from build tree'
+    # -D atomic-arm-linux-helpers=true # description : 'Use inline asm or libatomic_ops instead' (ARM only)
+    # -D atomic-arm-memory-barrier=false # description : 'Enable memory barriers (only really needed in SMP arm systems)' (ARM only)
+
+    # -D padsplibdir='' # description : 'Specify location where OSS wrapper library will be installed' (default lands at usr/lib/pulseaudio/ as in Arch)
+    -D pulsedsp-location="/usr/\$LIB/pulseaudio" # ARCH description : 'Specify location where OSS wrapper library will be loaded from; can use \\$LIB' (match Arch quoting: meson must get /usr/$LIB/pulseaudio or padsp breaks)
+    -D modlibexecdir="/usr/\$LIB/pulseaudio/modules" # GENTOO description : 'Specify location where modules will be installed' (daemon=false installs no modules; kept for Gentoo parity)
+    # -D alsadatadir='' # description : 'Directory for ALSA card profiles (defaults to ${datadir}/pulseaudio/alsa-mixer)' (needs alsa=enabled)
+    # -D systemduserunitdir='' # description : 'Directory for systemd user service files' (daemon units only)
+    -D udevrulesdir='/usr/lib/udev/rules.d' # ARCH GENTOO description : 'Directory for udev rules (defaults to /lib/udev/rules.d)' (udev=disabled installs no rules; kept for parity)
+    # -D bashcompletiondir='' # description : 'Directory for bash completion scripts ["no" disables]' (arch-meson default works)
+    # -D zshcompletiondir='' # description : 'Directory for zsh completion scripts ["no" disables]' (default works)
+
+    -D alsa=disabled # GENTOO description : 'Optional ALSA support'
+    -D asyncns=enabled # ARCH GENTOO description : 'Optional Async DNS support' (Arch links libpulse against it; auto risks a silent off)
+    -D avahi=disabled # GENTOO description : 'Optional Avahi support'
+    -D bluez5=disabled # GENTOO description : 'Optional BlueZ 5 support'
+    -D bluez5-gstreamer=disabled # GENTOO description : 'Optional BlueZ 5 GStreamer support'
+    -D bluez5-native-headset=false # GENTOO description : 'Optional native headset backend support (BlueZ 5)'
+    -D bluez5-ofono-headset=false # GENTOO description : 'Optional oFono headset backend support (BlueZ 5)'
+    -D consolekit=disabled # ARCH description : 'Optional ConsoleKit support'
+    -D dbus=enabled # ARCH description : 'Optional D-Bus support' (Arch links libpulse against it; pin it on)
+    -D elogind=disabled # ARCH GENTOO description : 'Optional elogind support'
+    -D fftw=disabled # GENTOO description : 'Optional FFTW support'
+    -D glib=enabled # ARCH GENTOO description : 'Optional GLib 2 support' (ships libpulse-mainloop-glib.so; flipping it changes ABI)
+    -D gsettings=disabled # GENTOO description : 'Optional GSettings support'
+    -D gstreamer=disabled # GENTOO description : 'Optional GStreamer dependency for media-related functionality'
+    -D gtk=disabled # description : 'Optional Gtk+ 3 support' (Fedora disables it for client builds; you avoid gtk3)
+    -D hal-compat=false # GENTOO description : 'Optional HAL->udev transition compatibility support (needs udev)'
+    -D ipv6=true # GENTOO description : 'Optional IPv6 support'
+    -D jack=disabled # GENTOO description : 'Optional JACK support'
+    -D lirc=disabled # GENTOO description : 'Optional LIRC support'
+    -D openssl=disabled # GENTOO description : 'Optional OpenSSL support (used for Airtunes/RAOP)'
+    -D orc=disabled # GENTOO description : 'Optimized Inner Loop Runtime Compiler'
+    -D oss-output=enabled # ARCH description : 'Optional OSS output support' (keep enabled: HAVE_OSS_WRAPPER builds padsp + libpulsedsp.so + padsp.1 from Arch's file list. daemon=false skips module-oss. Fedora agrees.)
+    -D samplerate=disabled # GENTOO description : 'Optional libsamplerate support (DEPRECATED)'
+    -D soxr=disabled # GENTOO description : 'Optional SoXR support (resampling)'
+    -D speex=disabled # GENTOO description : 'Optional Speex support (resampling, AEC)'
+    -D systemd=enabled # ARCH description : 'Optional systemd support' (Arch links libpulse against systemd-libs)
+    -D tcpwrap=disabled # ARCH GENTOO description : 'Optional TCP wrappers support'
+    -D udev=disabled # GENTOO description : 'Optional udev support'
+    -D valgrind=disabled # description : 'Optional Valgrind support' (test headers only)
+    -D x11=disabled # WAYLAND description : 'Optional X11 support'
+    # -D enable-smoother-2=true # description : 'Use alternative time smoother implementation' (upstream defaults true; Arch and Gentoo leave it)
+
+    -D adrian-aec=false # GENTOO description : 'Optional Adrian's echo canceller'
+    -D webrtc-aec=disabled # GENTOO description : 'Optional WebRTC-based echo canceller'
+  )
+
+  arch-meson pulseaudio build "${_meson_options[@]}"
+  meson compile -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" meson install -C build
+  install -Dm644 pulseaudio/LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+
+  # Point clients at pipewire-pulse instead of spawning pulseaudio.
+  # Arch applies this sed in package_pulseaudio(); Gentoo does it in src_prepare.
+  sed -e '/autospawn/iautospawn = no' -i "${pkgdir}/etc/pulse/client.conf"
+
+  # Upstream installs pa-info with any client=true build (src/utils/meson.build).
+  # Arch splits it into the daemon package and Fedora rms it with daemon off.
+  # Remove it here.
+  rm -f "${pkgdir}/usr/bin/pa-info"
+
+  # Upstream adds pactl->pulseaudio/pacmd/pasuspender completions with daemon=true
+  # (shell-completion/bash/meson.build). Arch splits the pulseaudio one into
+  # libpulse and Gentoo re-adds them with bashcomp_alias. Recreate that link.
+  local _compdir="${pkgdir}/usr/share/bash-completion/completions"
+  if [[ -f "${_compdir}/pactl" ]]; then
+    ln -sf pactl "${_compdir}/pulseaudio"
+  fi
+
+  # daemon=false installs no modules; drop the dir when meson leaves it behind.
+  if [[ -d "${pkgdir}/usr/lib/pulseaudio/modules" ]]; then
+    rmdir --ignore-fail-on-non-empty "${pkgdir}/usr/lib/pulseaudio/modules" || true
+  fi
+
+  # Arch splits locale into the daemon package.
+  rm -rf "${pkgdir}/usr/share/locale"
+}
