@@ -2,6 +2,7 @@ pkgbase = mpv-waypure
 	pkgdesc = a free, open source, and cross-platform media player
 	pkgver = 0.41.0
 	pkgrel = 1
+	epoch = 1
 	url = https://github.com/mpv-player/mpv
 	arch = x86_64
 	license = GPL-2.0-or-later AND LGPL-2.1-or-later

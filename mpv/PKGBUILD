@@ -5,6 +5,7 @@ _pkgname=mpv
 pkgname=${_pkgname}-waypure
 pkgver=0.41.0
 pkgrel=1
+epoch=1
 pkgdesc="a free, open source, and cross-platform media player"
 arch=('x86_64')
 url="https://github.com/mpv-player/mpv"

@@ -5,6 +5,7 @@ _pkgname=gtk3
 pkgname=${_pkgname}-waypure
 pkgver=3.24.52
 pkgrel=1
+epoch=1
 pkgdesc="GObject-based multi-platform GUI toolkit"
 arch=('x86_64')
 url="https://gitlab.gnome.org/GNOME/gtk"
